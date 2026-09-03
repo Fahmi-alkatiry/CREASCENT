@@ -474,3 +474,182 @@
             addNote('middle');
             addNote('base');
             
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('workshopDate').value = today;
+        };
+        
+        // Listen to changes
+        document.getElementById('bottleSize').addEventListener('change', calculateBasic);
+        document.querySelectorAll('input[name="perfumeType"]').forEach(radio => {
+            radio.addEventListener('change', calculateBasic);
+        });
+        
+        function calculateBasic() {
+            const bottleSize = parseFloat(document.getElementById('bottleSize').value);
+            const perfumeType = document.querySelector('input[name="perfumeType"]:checked').value;
+            
+            if (!bottleSize) {
+                document.getElementById('basicResult').style.display = 'none';
+                document.getElementById('notesSection').style.display = 'none';
+                return;
+            }
+            
+            // Calculate weights
+            const totalWeight = bottleSize * DENSITY;
+            const conc = concentrations[perfumeType];
+            const ethanolWeight = totalWeight * conc.ethanol;
+            const foWeight = totalWeight * conc.fo;
+            const dilutedFOWeight = foWeight / DILUTED_FO_CONCENTRATION;
+            
+            // Display results
+            document.getElementById('totalVolume').textContent = `${bottleSize} ml`;
+            document.getElementById('totalWeight').textContent = `${totalWeight.toFixed(2)} gram`;
+            document.getElementById('ethanolWeight').textContent = `${ethanolWeight.toFixed(2)} gram`;
+            document.getElementById('dilutedFOWeight').textContent = `${dilutedFOWeight.toFixed(2)} gram`;
+            
+            document.getElementById('basicResult').style.display = 'block';
+            document.getElementById('notesSection').style.display = 'block';
+            
+            // Store for later calculation
+            window.dilutedFOWeight = dilutedFOWeight;
+            
+            calculateFinal();
+        }
+        
+        function addNote(category) {
+            const container = document.getElementById(`${category}NotesContainer`);
+            const noteId = `${category}_${++noteCounters[category]}`;
+            
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'note-input-group';
+            noteDiv.id = noteId;
+            noteDiv.innerHTML = `
+                <input type="text" placeholder="Nama note (contoh: Lavender)" 
+                       onchange="calculateFinal()" id="${noteId}_name">
+                <input type="number" placeholder="%" min="0" max="100" 
+                       oninput="calculateFinal()" id="${noteId}_percent">
+                <button class="btn-remove" onclick="removeNote('${noteId}', '${category}')" title="Hapus">
+                    <svg class="trash-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6h18v2H3V6zm2 3h14l-1 13H6L5 9zm5-7h4v2H10V2z"/>
+                    </svg>
+                </button>
+            `;
+            
+            container.appendChild(noteDiv);
+        }
+        
+        function removeNote(noteId, category) {
+            const element = document.getElementById(noteId);
+            if (element) {
+                element.remove();
+                calculateFinal();
+            }
+        }
+        
+        function calculateFinal() {
+            if (!window.dilutedFOWeight) return;
+            
+            const categories = ['top', 'middle', 'base'];
+            let allValid = true;
+            let results = [];
+            
+            categories.forEach(category => {
+                const container = document.getElementById(`${category}NotesContainer`);
+                const noteInputs = container.querySelectorAll('.note-input-group');
+                
+                let totalPercent = 0;
+                let categoryResults = [];
+                
+                noteInputs.forEach(noteDiv => {
+                    const nameInput = noteDiv.querySelector('input[type="text"]');
+                    const percentInput = noteDiv.querySelector('input[type="number"]');
+                    
+                    const name = nameInput.value.trim();
+                    const percent = parseFloat(percentInput.value) || 0;
+                    
+                    totalPercent += percent;
+                    
+                    if (name && percent > 0) {
+                        const categoryWeight = window.dilutedFOWeight * noteRatios[category];
+                        const noteWeight = categoryWeight * (percent / 100);
+                        
+                        categoryResults.push({
+                            name: name,
+                            percent: percent,
+                            weight: noteWeight,
+                            category: category
+                        });
+                    }
+                });
+                
+                // Update total display
+                const totalElement = document.getElementById(`${category}Total`);
+                totalElement.textContent = `Total: ${totalPercent.toFixed(0)}%`;
+                
+                if (totalPercent !== 100 && noteInputs.length > 0) {
+                    totalElement.style.color = '#dc3545';
+                    allValid = false;
+                } else {
+                    totalElement.style.color = '#28a745';
+                }
+                
+                results = results.concat(categoryResults);
+            });
+            
+            // Display final results
+            if (results.length > 0 && allValid) {
+                displayFinalResults(results);
+            } else {
+                document.getElementById('finalResult').style.display = 'none';
+            }
+        }
+        
+        function displayFinalResults(results) {
+            const participantName = document.getElementById('participantName').value || 'Peserta';
+            const bottleSize = document.getElementById('bottleSize').value;
+            const perfumeType = document.querySelector('input[name="perfumeType"]:checked').value;
+            
+            let html = `
+                <div class="final-result-item" style="background: #333; color: white;">
+                    <strong>Nama:</strong>
+                    <strong>${participantName}</strong>
+                </div>
+                <div class="final-result-item" style="background: #333; color: white;">
+                    <strong>Ukuran: ${bottleSize} ml (${perfumeType})</strong>
+                    <strong>Etanol: ${document.getElementById('ethanolWeight').textContent}</strong>
+                </div>
+            `;
+            
+            const categoryNames = {
+                top: '▲ Top Notes',
+                middle: '■ Middle Notes',
+                base: '▼ Base Notes'
+            };
+            
+            let currentCategory = null;
+            results.forEach(note => {
+                if (note.category !== currentCategory) {
+                    html += `
+                        <div class="final-result-item" style="background: #f0f0f0; font-weight: bold; margin-top: 10px;">
+                            <span>${categoryNames[note.category]}</span>
+                            <span></span>
+                        </div>
+                    `;
+                    currentCategory = note.category;
+                }
+                
+                html += `
+                    <div class="final-result-item">
+                        <span>${note.name} (${note.percent}%)</span>
+                        <strong>${note.weight.toFixed(2)} gram</strong>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('finalResultContent').innerHTML = html;
+            document.getElementById('finalResult').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
