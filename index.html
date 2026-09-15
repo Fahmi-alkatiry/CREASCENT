@@ -4,460 +4,436 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fragrance Calculator by Creascent</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                        },
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
-            min-height: 100vh;
-            padding: 10px;
+        ::-webkit-scrollbar-track {
+            background: #f5f5f4;
         }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 20px 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 4px;
         }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a29e;
         }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-        
-        .logo-sub {
-            font-size: 14px;
-            color: #666;
-            font-weight: normal;
-            letter-spacing: 3px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 5px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-        
-        .section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .icon {
-            font-size: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        input[type="text"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #333;
-        }
-        
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 8px;
-        }
-        
-        .radio-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px;
-            background: white;
-            border-radius: 6px;
-            border: 2px solid #ddd;
-        }
-        
-        .radio-option input[type="radio"]:checked + label {
-            font-weight: bold;
-        }
-        
-        input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .result-box {
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-            border: 2px solid #e0e0e0;
-        }
-        
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
-        }
-        
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .result-label {
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .result-value {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .notes-container {
-            display: none;
-        }
-        
-        .note-category {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid #333;
-        }
-        
-        .note-category h4 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .note-input-group {
-            display: grid;
-            grid-template-columns: 2fr 1fr auto;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        
-        input[type="number"] {
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .btn {
-            padding: 10px 16px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-            width: 100%;
-        }
-        
-        .btn:hover {
-            background: #1a1a1a;
-        }
-        
-        .btn-small {
-            padding: 8px 14px;
-            font-size: 13px;
-        }
-        
-        .btn-remove {
-            background: transparent;
-            border: none;
-            padding: 8px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-remove:hover {
-            transform: scale(1.15);
-        }
-        
-        .trash-icon {
-            width: 20px;
-            height: 20px;
-            fill: #dc3545;
-        }
-        
-        .error {
-            color: #dc3545;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-        
-        .final-result {
-            background: #f5f5f5;
-            border: 2px solid #333;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        
-        .final-result h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .final-result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: white;
-            margin-bottom: 8px;
-            border-radius: 6px;
-        }
-        
-        .category-total {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        .btn-print {
-            width: 100%;
-            padding: 15px;
-            background: #333;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-        
-        .btn-print:hover {
-            background: #1a1a1a;
-        }
-        
+
+        /* Styling for print view */
         @media print {
             body {
-                background: white;
-                padding: 0;
+                background: white !important;
+                color: #0c0a09 !important;
             }
-            
-            .container {
-                box-shadow: none;
-                padding: 20px;
-                max-width: 100%;
-            }
-            
-            .section {
-                page-break-inside: avoid;
-            }
-            
-            .btn, .btn-small, .btn-remove, .btn-print {
+            .no-print {
                 display: none !important;
             }
-            
-            .note-input-group {
-                grid-template-columns: 2fr 1fr;
+            .print-only {
+                display: block !important;
             }
-            
-            input, select {
-                border: none;
-                border-bottom: 1px solid #333;
-                background: transparent;
-                font-weight: bold;
+            .print-card {
+                box-shadow: none !important;
+                border: 1px solid #d6d3d1 !important;
+                background: white !important;
+                color: #0c0a09 !important;
             }
-            
-            .final-result {
-                page-break-before: always;
+            .print-text-dark {
+                color: #0c0a09 !important;
             }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">CREASCENT</div>
-            <h1>Fragrance Blending Calculator</h1>
-        </div>
-        
-        <!-- Step 1: Basic Info -->
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">●</span> Step 1: Informasi Dasar
-            </div>
-            
-            <div class="form-group">
-                <label>Nama Peserta:</label>
-                <input type="text" id="participantName" placeholder="Masukkan nama Anda">
-            </div>
-            
-            <div class="form-group">
-                <label>Tanggal:</label>
-                <input type="date" id="workshopDate">
-            </div>
-            
-            <div class="form-group">
-                <label>Ukuran Botol (ml):</label>
-                <select id="bottleSize">
-                    <option value="">-- Pilih Ukuran --</option>
-                    <option value="10">10 ml</option>
-                    <option value="15">15 ml</option>
-                    <option value="20">20 ml</option>
-                    <option value="25">25 ml</option>
-                    <option value="30">30 ml</option>
-                    <option value="50">50 ml</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Tipe Parfum:</label>
-                <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" id="typeEDP" name="perfumeType" value="EDP" checked>
-                        <span>EDP (Eau de Parfum - 15%)</span>
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" id="typeEDT" name="perfumeType" value="EDT">
-                        <span>EDT (Eau de Toilette - 8%)</span>
-                    </label>
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen pb-16 antialiased">
+
+    <!-- Header Navbar -->
+    <header class="border-b border-stone-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm no-print">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <!-- <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md shadow-amber-500/20 border border-amber-300">
+                    C
+                </div> -->
+                <img class="w-10 h-10 rounded-xl object-cover" src="./logo.jpeg" alt="Logo Creascent">
+                <div>
+                    <h1 class="font-serif tracking-widest text-lg md:text-xl font-bold text-stone-900 leading-none">CREASCENT</h1>
+                    <p class="text-[10px] text-amber-700 tracking-widest uppercase font-semibold mt-0.5">Fragrance Lab & Atelier</p>
                 </div>
-                <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
-                    *EDP konsentrasi akhir 15% | EDT konsentrasi akhir 8%
-                </small>
             </div>
-            
-            <div id="basicResult" class="result-box" style="display: none;">
-                <div class="result-item">
-                    <span class="result-label">Total Volume:</span>
-                    <span class="result-value" id="totalVolume">0 ml</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Total Berat:</span>
-                    <span class="result-value" id="totalWeight">0 gram</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Etanol yang dibutuhkan:</span>
-                    <span class="result-value" id="ethanolWeight">0 gram</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Diluted FO 35% yang dibutuhkan:</span>
-                    <span class="result-value" id="dilutedFOWeight">0 gram</span>
-                </div>
+
+            <!-- Quick Action Preset Buttons -->
+            <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+                <button onclick="loadPreset('citrus_floral')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition shadow-sm flex items-center space-x-1">
+                    <span>✨ Citrus Floral</span>
+                </button>
+                <button onclick="loadPreset('woody_amber')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-200 transition shadow-sm flex items-center space-x-1">
+                    <span>🪵 Woody Amber</span>
+                </button>
+                <button onclick="resetCalculator()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition shadow-sm">
+                    Reset Form
+                </button>
             </div>
         </div>
-        
-        <!-- Step 2: Notes Selection -->
-        <div class="section notes-container" id="notesSection">
-            <div class="section-title">
-                <span class="icon">●</span> Step 2: Pilih Fragrance Notes
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 pt-6">
+
+        <!-- Top Announcement & Lab Banner -->
+        <!-- <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-100/40 to-stone-100 border border-amber-200 text-stone-700 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3 no-print">
+            <div class="flex items-center space-x-3.5">
+                <span class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center text-xl shrink-0">🧪</span>
+                <div>
+                    <h2 class="font-semibold text-stone-900 text-sm md:text-base">Kalkulator Formulasi Parfum Workshop</h2>
+                    <p class="text-xs text-stone-600">Hitung gramatur Etanol & Diluted Fragrance Oil (35%) secara akurat untuk racikan Top, Middle, Base, & Blender notes.</p>
+                </div>
             </div>
-            <p style="color: #666; margin-bottom: 15px; font-size: 13px;">
-                Rasio: Top 30% : Middle 40% : Base 30%<br>
-                Pastikan total persentase di setiap kategori = 100%
-            </p>
-            
-            <!-- Top Notes -->
-            <div class="note-category">
-                <h4>▲ Top Notes (30%)</h4>
-                <div id="topNotesContainer"></div>
-                <button class="btn btn-small" onclick="addNote('top')">+ Tambah Top Note</button>
-                <div class="category-total" id="topTotal">Total: 0%</div>
+            <span class="text-xs font-mono bg-white border border-stone-200 px-3 py-1.5 rounded-lg text-stone-600 shadow-xs whitespace-nowrap">
+                Densitas Liquid: <strong class="text-amber-800">0.88 g/ml</strong>
+            </span>
+        </div> -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT COLUMN: Step 1 (Inputs & Base Calculation) -->
+            <div class="lg:col-span-5 space-y-6 no-print">
+
+                <!-- Step 1 Card -->
+                <div class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-2.5 border-b border-stone-100 pb-3">
+                        <span class="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center shadow-xs">1</span>
+                        <h2 class="font-semibold text-stone-900 text-base">Spesifikasi Workshop Lab</h2>
+                    </div>
+
+                    <!-- Participant Name -->
+                    <div>
+                        <label for="participantName" class="block text-xs font-semibold text-stone-700 mb-1">Nama Formulator / Peserta</label>
+                        <input type="text" id="participantName" placeholder="Contoh: Alexandra" 
+                               class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition">
+                    </div>
+
+                    <!-- Date & Formula Name -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="workshopDate" class="block text-xs font-semibold text-stone-700 mb-1">Tanggal</label>
+                            <input type="date" id="workshopDate" 
+                                   class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition">
+                        </div>
+                        <div>
+                            <label for="formulaName" class="block text-xs font-semibold text-stone-700 mb-1">Nama Racikan</label>
+                            <input type="text" id="formulaName" placeholder="Velvet Amber" 
+                                   class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition">
+                        </div>
+                    </div>
+
+                    <!-- Bottle Size -->
+                    <div>
+                        <label for="bottleSize" class="block text-xs font-semibold text-stone-700 mb-1">Ukuran Botol (Target Volume)</label>
+                        <select id="bottleSize" onchange="calculateBasic()" 
+                                class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition cursor-pointer">
+                            <option value="">-- Pilih Ukuran Botol --</option>
+                            <option value="10">10 ml (Trial Sample)</option>
+                            <option value="15">15 ml (Travel Size)</option>
+                            <option value="20" selected>20 ml (Regular Workshop)</option>
+                            <option value="25">25 ml (Medium Spray)</option>
+                            <option value="30">30 ml (Standard Bottle)</option>
+                            <option value="50">50 ml (Full Size)</option>
+                            <option value="100">100 ml (Master Batch)</option>
+                        </select>
+                    </div>
+
+                    <!-- Perfume Type / Concentration -->
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-2">Konsentrasi Fragrance</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <label class="flex items-center space-x-2.5 bg-stone-50 border border-stone-200 p-3 rounded-xl cursor-pointer hover:border-amber-400 transition shadow-2xs">
+                                <input type="radio" name="perfumeType" value="EDP" checked onchange="calculateBasic()" class="accent-amber-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-xs font-bold text-stone-800">EDP (15%)</span>
+                                    <span class="block text-[10px] text-stone-500">Eau de Parfum</span>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center space-x-2.5 bg-stone-50 border border-stone-200 p-3 rounded-xl cursor-pointer hover:border-amber-400 transition shadow-2xs">
+                                <input type="radio" name="perfumeType" value="EDT" onchange="calculateBasic()" class="accent-amber-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-xs font-bold text-stone-800">EDT (8%)</span>
+                                    <span class="block text-[10px] text-stone-500">Eau de Toilette</span>
+                                </div>
+                            </label>
+                        </div>
+                        <p class="text-[11px] text-stone-500 mt-2">*Konsentrasi Fragrance Oil murni dalam larutan akhir.</p>
+                    </div>
+
+                    <!-- Note Structure Mode (Standard vs Blender) -->
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-2">Struktur Note Formulasi</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <label class="flex items-center space-x-2.5 bg-stone-50 border border-stone-200 p-3 rounded-xl cursor-pointer hover:border-amber-400 transition shadow-2xs">
+                                <input type="radio" name="structureMode" value="standard" checked onchange="changeStructureMode()" class="accent-amber-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-xs font-bold text-stone-800">Standar Piramida</span>
+                                    <span class="block text-[10px] text-stone-500">30% Top • 40% Mid • 30% Base</span>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center space-x-2.5 bg-stone-50 border border-purple-200 p-3 rounded-xl cursor-pointer hover:border-purple-400 transition shadow-2xs bg-purple-50/20">
+                                <input type="radio" name="structureMode" value="blender" onchange="changeStructureMode()" class="accent-purple-600 w-4 h-4">
+                                <div>
+                                    <span class="block text-xs font-bold text-purple-900">Opsi Blender</span>
+                                    <span class="block text-[10px] text-purple-700">15% Top • 40% Mid • 15% Base • 30% Blender</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base Formula Summary Card -->
+                <div id="basicResultCard" class="bg-gradient-to-br from-white via-amber-50/30 to-amber-100/30 border border-amber-200/80 rounded-2xl p-5 shadow-sm space-y-3">
+                    <h3 class="text-xs uppercase tracking-wider font-bold text-amber-800 flex items-center justify-between">
+                        <span>Ringkasan Berat Larutan</span>
+                        <span class="text-stone-500 font-mono text-[10px] bg-white border border-stone-200 px-2 py-0.5 rounded">⚖️ Presisi Gram</span>
+                    </h3>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between py-1.5 border-b border-stone-200/60">
+                            <span class="text-stone-600">Total Berat Liquid (Densitas 0.88):</span>
+                            <span class="font-mono font-bold text-stone-900" id="totalWeight">0.00 gram</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-stone-200/60">
+                            <span class="text-stone-600">Pelarut Utama (Etanol Denat 96%):</span>
+                            <span class="font-mono font-bold text-emerald-700" id="ethanolWeight">0.00 gram</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-stone-200/60">
+                            <span class="text-stone-600">Total Diluted FO 35% Terpakai:</span>
+                            <span class="font-mono font-bold text-amber-700" id="dilutedFOWeight">0.00 gram</span>
+                        </div>
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-stone-600">Perkiraan Tetes FO (~30/g):</span>
+                            <span class="font-mono font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md" id="approxDrops">0 tetes</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            
-            <!-- Middle Notes -->
-            <div class="note-category">
-                <h4>■ Middle Notes (40%)</h4>
-                <div id="middleNotesContainer"></div>
-                <button class="btn btn-small" onclick="addNote('middle')">+ Tambah Middle Note</button>
-                <div class="category-total" id="middleTotal">Total: 0%</div>
+
+            <!-- RIGHT COLUMN: Step 2 & Final Summary -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- Step 2: Fragrance Notes Selection -->
+                <div class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm space-y-5 no-print">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center shadow-xs">2</span>
+                            <h2 class="font-semibold text-stone-900 text-base">Komposisi Fragrance Notes</h2>
+                        </div>
+                        <div id="ratioBadge" class="text-[11px] text-stone-600 bg-stone-100 px-3 py-1 rounded-lg border border-stone-200 font-medium">
+                            Rasio: <span class="text-amber-700 font-bold">Top 30%</span> : <span class="text-emerald-700 font-bold">Middle 40%</span> : <span class="text-stone-700 font-bold">Base 30%</span>
+                        </div>
+                    </div>
+
+                    <!-- Top Notes Category -->
+                    <div class="bg-amber-50/40 border border-amber-200/80 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-xs"></span>
+                                <h3 id="topHeaderLabel" class="text-xs font-bold uppercase tracking-wider text-amber-800">▲ Top Notes (30% dari FO)</h3>
+                            </div>
+                            <span id="topTotal" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-md bg-white border border-stone-200 text-stone-600">Total: 0%</span>
+                        </div>
+                        <div id="topNotesContainer" class="space-y-2"></div>
+                        <div class="flex items-center justify-between pt-1">
+                            <button onclick="addNote('top')" class="text-xs font-semibold text-amber-700 bg-amber-200 rounded-md p-2 border border-amber-300 hover:text-amber-800 flex items-center space-x-1 transition">
+                                <span>+ Tambah Top Note</span>
+                            </button>
+                            <button onclick="autoBalanceCategory('top')" class="text-[11px] font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 px-2.5 py-1 rounded-md transition shadow-2xs">
+                                ⚖️ Ratakan %
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Middle Notes Category -->
+                    <div class="bg-emerald-50/40 border border-emerald-200/80 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs"></span>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800">■ Middle / Heart Notes (40% dari FO)</h3>
+                            </div>
+                            <span id="middleTotal" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-md bg-white border border-stone-200 text-stone-600">Total: 0%</span>
+                        </div>
+                        <div id="middleNotesContainer" class="space-y-2"></div>
+                        <div class="flex items-center justify-between pt-1">
+                            <button onclick="addNote('middle')" class="text-xs font-semibold text-emerald-700 bg-emerald-200 rounded-md p-2 border border-emerald-300 hover:text-emerald-800 flex items-center space-x-1 transition">
+                                <span>+ Tambah Middle Note</span>
+                            </button>
+                            <button onclick="autoBalanceCategory('middle')" class="text-[11px] font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 px-2.5 py-1 rounded-md transition shadow-2xs">
+                                ⚖️ Ratakan %
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Base Notes Category -->
+                    <div class="bg-stone-100/60 border border-stone-300 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-stone-700 shadow-xs"></span>
+                                <h3 id="baseHeaderLabel" class="text-xs font-bold uppercase tracking-wider text-stone-800">▼ Base Notes (30% dari FO)</h3>
+                            </div>
+                            <span id="baseTotal" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-md bg-white border border-stone-200 text-stone-600">Total: 0%</span>
+                        </div>
+                        <div id="baseNotesContainer" class="space-y-2"></div>
+                        <div class="flex items-center justify-between pt-1">
+                            <button onclick="addNote('base')" class="text-xs font-semibold text-stone-700 bg-stone-200 rounded-md p-2 border border-stone-300 hover:text-stone-900 flex items-center space-x-1 transition">
+                                <span>+ Tambah Base Note</span>
+                            </button>
+                            <button onclick="autoBalanceCategory('base')" class="text-[11px] font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 px-2.5 py-1 rounded-md transition shadow-2xs">
+                                ⚖️ Ratakan %
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Blender Notes Category (Hidden in standard mode, visible in Blender mode) -->
+                    <div id="blenderSection" class="bg-purple-50/50 border border-purple-200 rounded-xl p-4 space-y-3 hidden">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-purple-600 shadow-xs"></span>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-purple-900">🌀 Blender Notes (30% dari FO)</h3>
+                            </div>
+                            <span id="blenderTotal" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-md bg-white border border-stone-200 text-stone-600">Total: 0%</span>
+                        </div>
+                        <div id="blenderNotesContainer" class="space-y-2"></div>
+                        <div class="flex items-center justify-between pt-1">
+                            <button onclick="addNote('blender')" class="text-xs font-semibold text-purple-700 bg-purple-200 rounded-md p-2 border border-purple-300 hover:text-purple-900 flex items-center space-x-1 transition">
+                                <span>+ Tambah Blender Note</span>
+                            </button>
+                            <button onclick="autoBalanceCategory('blender')" class="text-[11px] font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 px-2.5 py-1 rounded-md transition shadow-2xs">
+                                ⚖️ Ratakan %
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Final Recipe Output Card -->
+                <div id="finalResult" style="display: none;" class="bg-white border border-amber-300 rounded-2xl p-6 shadow-md space-y-6 print-card">
+
+                    <!-- Header for Print & Display -->
+                    <div class="border-b border-stone-200 pb-4 flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-serif text-amber-700 tracking-widest font-semibold uppercase">CREASCENT LAB SHEET</div>
+                            <h2 class="text-xl font-bold font-serif text-stone-900 print-text-dark" id="displayFormulaName">Resep Formulasi Parfum</h2>
+                            <p class="text-xs text-stone-500 mt-1 print-text-dark">
+                                Formulator: <span id="displayParticipant" class="font-semibold text-stone-800 print-text-dark">Peserta</span> | 
+                                Tanggal: <span id="displayDate" class="text-stone-700 print-text-dark">-</span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <span id="displayBadge" class="inline-block px-3 py-1 rounded-full text-xs font-mono font-semibold bg-amber-100 text-amber-800 border border-amber-200">EDP (20ml)</span>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-stone-200 text-stone-500 font-mono bg-stone-50">
+                                    <th class="py-2.5 px-3 rounded-l-lg">Kategori</th>
+                                    <th class="py-2.5 px-3">Nama Ingredients / Note</th>
+                                    <th class="py-2.5 px-3 text-right">Kategori %</th>
+                                    <th class="py-2.5 px-3 text-right">Berat (Gram)</th>
+                                    <th class="py-2.5 px-3 text-right rounded-r-lg">Est. Tetes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recipeTableBody" class="divide-y divide-stone-100 text-stone-800">
+                                <!-- Dynamic rows insert here -->
+                            </tbody>
+                            <tfoot id="recipeTableFoot" class="border-t-2 border-stone-200 font-semibold text-stone-900 bg-amber-50/30">
+                                <!-- Totals row -->
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Lab Instruction Note -->
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs text-stone-600 space-y-1.5 print-card">
+                        <div class="font-bold text-stone-800 flex items-center space-x-1.5">
+                            <span>💡 Petunjuk Racikan Lab:</span>
+                        </div>
+                        <ol class="list-decimal list-inside space-y-1 pl-1 text-stone-700">
+                            <li>Timbang <strong>Base Notes</strong>, <strong>Middle Notes</strong>, <strong>Blender Notes</strong> (jika ada), lalu <strong>Top Notes</strong> ke dalam beaker/vessel sesuai gramatur.</li>
+                            <li>Aduk perlahan racikan fragrance oils hingga homogen.</li>
+                            <li>Tambahkan <strong>Etanol (<span id="instructEthanol" class="font-mono font-bold text-amber-800">0.00</span>g)</strong> perlahan sambil dihomogenkan.</li>
+                            <li>Simpan dalam botol kaca gelap untuk proses maturasi / maceration (7 - 14 hari).</li>
+                        </ol>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-3 no-print">
+                        <button onclick="window.print()" class="flex-1 py-3 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold rounded-xl text-sm transition shadow-md shadow-amber-600/20 flex items-center justify-center space-x-2">
+                            <span>🖨️ Cetak / Simpan PDF Lab Sheet</span>
+                        </button>
+                        <button onclick="copyFormulaSummary()" class="px-4 py-3 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold rounded-xl text-sm border border-stone-200 transition flex items-center justify-center space-x-2 shadow-2xs">
+                            <span>📋 Salin Ringkasan Teks</span>
+                        </button>
+                    </div>
+
+                </div>
+
             </div>
-            
-            <!-- Base Notes -->
-            <div class="note-category">
-                <h4>▼ Base Notes (30%)</h4>
-                <div id="baseNotesContainer"></div>
-                <button class="btn btn-small" onclick="addNote('base')">+ Tambah Base Note</button>
-                <div class="category-total" id="baseTotal">Total: 0%</div>
-            </div>
+
         </div>
-        
-        <!-- Final Result -->
-        <div id="finalResult" style="display: none;" class="final-result">
-            <h3>■ Resep Parfum Anda</h3>
-            <div id="finalResultContent"></div>
-            <button class="btn-print" onclick="window.print()">▣ Print / Save to PDF</button>
-        </div>
+
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-stone-900 text-white border border-stone-700 px-4 py-3 rounded-xl font-medium text-xs shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center space-x-2">
+        <span class="text-amber-400">✨</span>
+        <span id="toastMessage">Notification message</span>
     </div>
 
     <script>
+        // Core Constants
         const DENSITY = 0.88; // gram/ml
-        const DILUTED_FO_CONCENTRATION = 0.35; // 35%
+        const DILUTED_FO_CONCENTRATION = 0.35; // 35% FO in solvent dilution
         
-        let noteCounters = { top: 0, middle: 0, base: 0 };
-        let concentrations = {
+        let noteCounters = { top: 0, middle: 0, base: 0, blender: 0 };
+        
+        const concentrations = {
             EDP: { fo: 0.15, ethanol: 0.85 }, // 15% FO, 85% ethanol
             EDT: { fo: 0.08, ethanol: 0.92 }  // 8% FO, 92% ethanol
         };
@@ -465,80 +441,156 @@
         let noteRatios = {
             top: 0.30,
             middle: 0.40,
-            base: 0.30
+            base: 0.30,
+            blender: 0.00
         };
-        
-        // Initialize with one note in each category
+
+        // Presets Data
+        const PRESETS = {
+            citrus_floral: {
+                name: "Citrus Floral Elegance",
+                top: [
+                    { name: "Bergamot Italy", percent: 60 },
+                    { name: "Lemon Zest", percent: 40 }
+                ],
+                middle: [
+                    { name: "Jasmine Sambac", percent: 50 },
+                    { name: "Rose Damask", percent: 50 }
+                ],
+                base: [
+                    { name: "White Musk", percent: 70 },
+                    { name: "Cedarwood Virginia", percent: 30 }
+                ]
+            },
+            woody_amber: {
+                name: "Royal Amberwood",
+                top: [
+                    { name: "Pink Pepper", percent: 50 },
+                    { name: "Cardamom", percent: 50 }
+                ],
+                middle: [
+                    { name: "Iso E Super", percent: 60 },
+                    { name: "Nutmeg", percent: 40 }
+                ],
+                base: [
+                    { name: "Ambergris Accord", percent: 40 },
+                    { name: "Sandalwood Mysore", percent: 40 },
+                    { name: "Vanilla Absolute", percent: 20 }
+                ]
+            }
+        };
+
+        // Initialize on page load
         window.onload = function() {
+            // Set today's date default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('workshopDate').value = today;
+            
+            // Add initial default input slots
             addNote('top');
             addNote('middle');
             addNote('base');
-            
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('workshopDate').value = today;
+
+            // Trigger initial basic calculation
+            calculateBasic();
         };
-        
-        // Listen to changes
-        document.getElementById('bottleSize').addEventListener('change', calculateBasic);
-        document.querySelectorAll('input[name="perfumeType"]').forEach(radio => {
-            radio.addEventListener('change', calculateBasic);
-        });
-        
+
         function calculateBasic() {
             const bottleSize = parseFloat(document.getElementById('bottleSize').value);
-            const perfumeType = document.querySelector('input[name="perfumeType"]:checked').value;
+            const perfumeTypeElement = document.querySelector('input[name="perfumeType"]:checked');
+            const perfumeType = perfumeTypeElement ? perfumeTypeElement.value : 'EDP';
             
-            if (!bottleSize) {
-                document.getElementById('basicResult').style.display = 'none';
-                document.getElementById('notesSection').style.display = 'none';
+            if (!bottleSize || isNaN(bottleSize)) {
+                window.dilutedFOWeight = 0;
+                window.ethanolWeight = 0;
+                window.totalWeight = 0;
+                document.getElementById('totalWeight').textContent = '0.00 gram';
+                document.getElementById('ethanolWeight').textContent = '0.00 gram';
+                document.getElementById('dilutedFOWeight').textContent = '0.00 gram';
+                document.getElementById('approxDrops').textContent = '0 tetes';
+                calculateFinal();
                 return;
             }
             
-            // Calculate weights
             const totalWeight = bottleSize * DENSITY;
-            const conc = concentrations[perfumeType];
+            const conc = concentrations[perfumeType] || concentrations['EDP'];
             const ethanolWeight = totalWeight * conc.ethanol;
             const foWeight = totalWeight * conc.fo;
             const dilutedFOWeight = foWeight / DILUTED_FO_CONCENTRATION;
+            const approxDrops = Math.round(dilutedFOWeight * 30);
             
-            // Display results
-            document.getElementById('totalVolume').textContent = `${bottleSize} ml`;
+            window.dilutedFOWeight = dilutedFOWeight;
+            window.ethanolWeight = ethanolWeight;
+            window.totalWeight = totalWeight;
+            
             document.getElementById('totalWeight').textContent = `${totalWeight.toFixed(2)} gram`;
             document.getElementById('ethanolWeight').textContent = `${ethanolWeight.toFixed(2)} gram`;
             document.getElementById('dilutedFOWeight').textContent = `${dilutedFOWeight.toFixed(2)} gram`;
-            
-            document.getElementById('basicResult').style.display = 'block';
-            document.getElementById('notesSection').style.display = 'block';
-            
-            // Store for later calculation
-            window.dilutedFOWeight = dilutedFOWeight;
+            document.getElementById('approxDrops').textContent = `~${approxDrops} tetes`;
             
             calculateFinal();
         }
-        
-        function addNote(category) {
+
+        function changeStructureMode() {
+            const mode = document.querySelector('input[name="structureMode"]:checked').value;
+            const blenderSection = document.getElementById('blenderSection');
+            const ratioBadge = document.getElementById('ratioBadge');
+            const topHeaderLabel = document.getElementById('topHeaderLabel');
+            const baseHeaderLabel = document.getElementById('baseHeaderLabel');
+
+            if (mode === 'blender') {
+                noteRatios = { top: 0.15, middle: 0.40, base: 0.15, blender: 0.30 };
+                blenderSection.classList.remove('hidden');
+                ratioBadge.innerHTML = `Rasio: <span class="text-amber-700 font-bold">Top 15%</span> : <span class="text-emerald-700 font-bold">Middle 40%</span> : <span class="text-stone-700 font-bold">Base 15%</span> : <span class="text-purple-700 font-bold">Blender 30%</span>`;
+                topHeaderLabel.textContent = '▲ Top Notes (15% dari FO)';
+                baseHeaderLabel.textContent = '▼ Base Notes (15% dari FO)';
+
+                if (document.getElementById('blenderNotesContainer').children.length === 0) {
+                    addNote('blender');
+                }
+            } else {
+                noteRatios = { top: 0.30, middle: 0.40, base: 0.30, blender: 0.00 };
+                blenderSection.classList.add('hidden');
+                ratioBadge.innerHTML = `Rasio: <span class="text-amber-700 font-bold">Top 30%</span> : <span class="text-emerald-700 font-bold">Middle 40%</span> : <span class="text-stone-700 font-bold">Base 30%</span>`;
+                topHeaderLabel.textContent = '▲ Top Notes (30% dari FO)';
+                baseHeaderLabel.textContent = '▼ Base Notes (30% dari FO)';
+            }
+            calculateFinal();
+        }
+
+        function addNote(category, initialName = '', initialPercent = '') {
             const container = document.getElementById(`${category}NotesContainer`);
             const noteId = `${category}_${++noteCounters[category]}`;
             
             const noteDiv = document.createElement('div');
-            noteDiv.className = 'note-input-group';
+            noteDiv.className = 'grid grid-cols-12 gap-2 items-center note-input-group';
             noteDiv.id = noteId;
             noteDiv.innerHTML = `
-                <input type="text" placeholder="Nama note (contoh: Lavender)" 
-                       onchange="calculateFinal()" id="${noteId}_name">
-                <input type="number" placeholder="%" min="0" max="100" 
-                       oninput="calculateFinal()" id="${noteId}_percent">
-                <button class="btn-remove" onclick="removeNote('${noteId}', '${category}')" title="Hapus">
-                    <svg class="trash-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 6h18v2H3V6zm2 3h14l-1 13H6L5 9zm5-7h4v2H10V2z"/>
-                    </svg>
-                </button>
+                <div class="col-span-6">
+                    <input type="text" value="${initialName}" placeholder="Nama note (ex: Lavender)" 
+                           oninput="calculateFinal()" id="${noteId}_name"
+                           class="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition shadow-2xs">
+                </div>
+                <div class="col-span-4 relative">
+                    <input type="number" value="${initialPercent}" placeholder="%" min="0" max="100" step="1"
+                           oninput="calculateFinal()" id="${noteId}_percent"
+                           class="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition pr-6 shadow-2xs font-mono">
+                    <span class="absolute right-2.5 top-1.5 text-xs text-stone-400 font-mono">%</span>
+                </div>
+                <div class="col-span-2 flex justify-end">
+                    <button onclick="removeNote('${noteId}', '${category}')" title="Hapus Note"
+                            class="p-1.5 text-stone-400 bg-stone-200 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                        <svg class="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
             `;
             
             container.appendChild(noteDiv);
+            calculateFinal();
         }
-        
+
         function removeNote(noteId, category) {
             const element = document.getElementById(noteId);
             if (element) {
@@ -546,109 +598,256 @@
                 calculateFinal();
             }
         }
-        
+
+        function autoBalanceCategory(category) {
+            const container = document.getElementById(`${category}NotesContainer`);
+            const inputs = container.querySelectorAll('input[type="number"]');
+            if (inputs.length === 0) return;
+
+            const share = (100 / inputs.length).toFixed(1);
+            let rem = 100 - (parseFloat(share) * inputs.length);
+
+            inputs.forEach((input, idx) => {
+                let val = parseFloat(share);
+                if (idx === 0) val += rem; // adjust remainder onto first input
+                input.value = Math.round(val);
+            });
+
+            calculateFinal();
+            showToast(`Persentase ${category.toUpperCase()} notes diratakan ke 100%`);
+        }
+
         function calculateFinal() {
-            if (!window.dilutedFOWeight) return;
-            
-            const categories = ['top', 'middle', 'base'];
-            let allValid = true;
+            if (!window.dilutedFOWeight || window.dilutedFOWeight <= 0) {
+                document.getElementById('finalResult').style.display = 'none';
+                return;
+            }
+
+            const mode = document.querySelector('input[name="structureMode"]:checked')?.value || 'standard';
+            const categories = mode === 'blender' ? ['top', 'middle', 'base', 'blender'] : ['top', 'middle', 'base'];
+            let allCategoriesValid = true;
             let results = [];
             
             categories.forEach(category => {
                 const container = document.getElementById(`${category}NotesContainer`);
-                const noteInputs = container.querySelectorAll('.note-input-group');
+                const noteGroups = container ? container.querySelectorAll('.note-input-group') : [];
                 
-                let totalPercent = 0;
+                let categoryTotalPercent = 0;
                 let categoryResults = [];
                 
-                noteInputs.forEach(noteDiv => {
-                    const nameInput = noteDiv.querySelector('input[type="text"]');
-                    const percentInput = noteDiv.querySelector('input[type="number"]');
+                noteGroups.forEach(group => {
+                    const nameInput = group.querySelector('input[type="text"]');
+                    const percentInput = group.querySelector('input[type="number"]');
                     
                     const name = nameInput.value.trim();
                     const percent = parseFloat(percentInput.value) || 0;
                     
-                    totalPercent += percent;
+                    categoryTotalPercent += percent;
                     
                     if (name && percent > 0) {
                         const categoryWeight = window.dilutedFOWeight * noteRatios[category];
                         const noteWeight = categoryWeight * (percent / 100);
+                        const noteDrops = Math.round(noteWeight * 30);
                         
                         categoryResults.push({
+                            category: category,
                             name: name,
                             percent: percent,
                             weight: noteWeight,
-                            category: category
+                            drops: noteDrops
                         });
                     }
                 });
                 
-                // Update total display
+                // Update percentage badges with high contrast light mode colors
                 const totalElement = document.getElementById(`${category}Total`);
-                totalElement.textContent = `Total: ${totalPercent.toFixed(0)}%`;
-                
-                if (totalPercent !== 100 && noteInputs.length > 0) {
-                    totalElement.style.color = '#dc3545';
-                    allValid = false;
-                } else {
-                    totalElement.style.color = '#28a745';
+                if (totalElement) {
+                    totalElement.textContent = `Total: ${categoryTotalPercent.toFixed(0)}%`;
+                    
+                    if (Math.abs(categoryTotalPercent - 100) > 0.1 && noteGroups.length > 0) {
+                        totalElement.className = 'text-xs font-mono font-bold px-2.5 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200';
+                        allCategoriesValid = false;
+                    } else {
+                        totalElement.className = 'text-xs font-mono font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200';
+                    }
                 }
-                
+
                 results = results.concat(categoryResults);
             });
-            
-            // Display final results
-            if (results.length > 0 && allValid) {
+
+            if (results.length > 0 && allCategoriesValid) {
                 displayFinalResults(results);
             } else {
                 document.getElementById('finalResult').style.display = 'none';
             }
         }
-        
+
         function displayFinalResults(results) {
-            const participantName = document.getElementById('participantName').value || 'Peserta';
-            const bottleSize = document.getElementById('bottleSize').value;
+            const participant = document.getElementById('participantName').value || 'Peserta Workshop';
+            const dateVal = document.getElementById('workshopDate').value || '-';
+            const formulaName = document.getElementById('formulaName').value || 'Custom Perfume Blend';
+            const bottleSize = document.getElementById('bottleSize').value || '20';
             const perfumeType = document.querySelector('input[name="perfumeType"]:checked').value;
-            
-            let html = `
-                <div class="final-result-item" style="background: #333; color: white;">
-                    <strong>Nama:</strong>
-                    <strong>${participantName}</strong>
-                </div>
-                <div class="final-result-item" style="background: #333; color: white;">
-                    <strong>Ukuran: ${bottleSize} ml (${perfumeType})</strong>
-                    <strong>Etanol: ${document.getElementById('ethanolWeight').textContent}</strong>
-                </div>
-            `;
-            
-            const categoryNames = {
-                top: '▲ Top Notes',
-                middle: '■ Middle Notes',
-                base: '▼ Base Notes'
+
+            document.getElementById('displayParticipant').textContent = participant;
+            document.getElementById('displayDate').textContent = dateVal;
+            document.getElementById('displayFormulaName').textContent = formulaName;
+            document.getElementById('displayBadge').textContent = `${perfumeType} (${bottleSize}ml)`;
+            document.getElementById('instructEthanol').textContent = window.ethanolWeight ? window.ethanolWeight.toFixed(2) : '0.00';
+
+            const tbody = document.getElementById('recipeTableBody');
+            tbody.innerHTML = '';
+
+            let grandTotalWeight = 0;
+            let grandTotalDrops = 0;
+
+            const categoryLabels = {
+                top: { label: `Top Note (${(noteRatios.top * 100).toFixed(0)}%)`, color: 'text-amber-800 font-semibold' },
+                middle: { label: `Middle Note (${(noteRatios.middle * 100).toFixed(0)}%)`, color: 'text-emerald-800 font-semibold' },
+                base: { label: `Base Note (${(noteRatios.base * 100).toFixed(0)}%)`, color: 'text-stone-800 font-semibold' },
+                blender: { label: `Blender Note (${(noteRatios.blender * 100).toFixed(0)}%)`, color: 'text-purple-900 font-semibold' }
             };
-            
-            let currentCategory = null;
-            results.forEach(note => {
-                if (note.category !== currentCategory) {
-                    html += `
-                        <div class="final-result-item" style="background: #f0f0f0; font-weight: bold; margin-top: 10px;">
-                            <span>${categoryNames[note.category]}</span>
-                            <span></span>
-                        </div>
-                    `;
-                    currentCategory = note.category;
-                }
-                
-                html += `
-                    <div class="final-result-item">
-                        <span>${note.name} (${note.percent}%)</span>
-                        <strong>${note.weight.toFixed(2)} gram</strong>
-                    </div>
+
+            results.forEach(item => {
+                grandTotalWeight += item.weight;
+                grandTotalDrops += item.drops;
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-stone-50 transition';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 ${categoryLabels[item.category].color}">${categoryLabels[item.category].label}</td>
+                    <td class="py-2.5 px-3 font-semibold text-stone-900 print-text-dark">${item.name}</td>
+                    <td class="py-2.5 px-3 text-right font-mono text-stone-600">${item.percent}%</td>
+                    <td class="py-2.5 px-3 text-right font-mono font-bold text-amber-800 print-text-dark">${item.weight.toFixed(3)}g</td>
+                    <td class="py-2.5 px-3 text-right font-mono text-stone-500 print-text-dark">~${item.drops}</td>
                 `;
+                tbody.appendChild(tr);
             });
-            
-            document.getElementById('finalResultContent').innerHTML = html;
+
+            // Add Ethanol row
+            const ethanolTr = document.createElement('tr');
+            ethanolTr.className = 'bg-stone-50/80 print-card font-medium';
+            ethanolTr.innerHTML = `
+                <td class="py-2.5 px-3 text-emerald-800 font-bold">Pelarut Utama</td>
+                <td class="py-2.5 px-3 font-semibold text-stone-900 print-text-dark">Etanol (Alcohol Denat 96%)</td>
+                <td class="py-2.5 px-3 text-right font-mono text-stone-400">-</td>
+                <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 print-text-dark">${window.ethanolWeight.toFixed(3)}g</td>
+                <td class="py-2.5 px-3 text-right font-mono text-stone-400">-</td>
+            `;
+            tbody.appendChild(ethanolTr);
+
+            // Foot total
+            const totalLiquid = grandTotalWeight + window.ethanolWeight;
+            const tfoot = document.getElementById('recipeTableFoot');
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="py-3 px-3 text-stone-800 font-bold print-text-dark">TOTAL FORMULASI BOTOL (${bottleSize} ml)</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-amber-900 print-text-dark">${totalLiquid.toFixed(2)}g</td>
+                    <td class="py-3 px-3 text-right font-mono text-stone-600 print-text-dark">~${grandTotalDrops} tetes FO</td>
+                </tr>
+            `;
+
             document.getElementById('finalResult').style.display = 'block';
+        }
+
+        // Preset Loader
+        function loadPreset(key) {
+            const preset = PRESETS[key];
+            if (!preset) return;
+
+            document.getElementById('formulaName').value = preset.name;
+
+            ['top', 'middle', 'base'].forEach(cat => {
+                const container = document.getElementById(`${cat}NotesContainer`);
+                container.innerHTML = '';
+                noteCounters[cat] = 0;
+
+                preset[cat].forEach(item => {
+                    addNote(cat, item.name, item.percent);
+                });
+            });
+
+            calculateFinal();
+            showToast(`Preset "${preset.name}" berhasil dimuat!`);
+        }
+
+        // Reset All Inputs
+        function resetCalculator() {
+            document.getElementById('participantName').value = '';
+            document.getElementById('formulaName').value = '';
+            document.getElementById('bottleSize').value = '20';
+            
+            const standardRadio = document.querySelector('input[name="structureMode"][value="standard"]');
+            if (standardRadio) standardRadio.checked = true;
+
+            ['top', 'middle', 'base', 'blender'].forEach(cat => {
+                const container = document.getElementById(`${cat}NotesContainer`);
+                if (container) container.innerHTML = '';
+                noteCounters[cat] = 0;
+            });
+
+            changeStructureMode();
+            addNote('top');
+            addNote('middle');
+            addNote('base');
+
+            calculateBasic();
+            showToast('Kalkulator berhasil di-reset.');
+        }
+
+        // Copy Formula Summary to Clipboard
+        function copyFormulaSummary() {
+            const participant = document.getElementById('participantName').value || 'Peserta';
+            const formulaName = document.getElementById('formulaName').value || 'Custom Blend';
+            const bottleSize = document.getElementById('bottleSize').value || '20';
+            const perfumeType = document.querySelector('input[name="perfumeType"]:checked').value;
+
+            let text = `=== CREASCENT FRAGRANCE FORMULA ===\n`;
+            text += `Formulator: ${participant}\n`;
+            text += `Varian: ${formulaName}\n`;
+            text += `Spesifikasi: ${perfumeType} (${bottleSize}ml)\n`;
+            text += `Pelarut Etanol: ${window.ethanolWeight.toFixed(2)}g\n`;
+            text += `Total Diluted FO (35%): ${window.dilutedFOWeight.toFixed(2)}g\n\n`;
+            text += `[Komposisi Fragrance Notes]\n`;
+
+            const rows = document.querySelectorAll('#recipeTableBody tr');
+            rows.forEach(r => {
+                const cols = r.querySelectorAll('td');
+                if (cols.length >= 4) {
+                    text += `- ${cols[0].innerText} | ${cols[1].innerText}: ${cols[3].innerText}\n`;
+                }
+            });
+
+            // Use execCommand fallback for clipboard compatibility inside iframe environments
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Formulasi berhasil disalin ke clipboard!');
+            } catch (err) {
+                showToast('Gagal menyalin teks.');
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        // Toast Notification Display Helper
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            if (!toast || !toastMessage) return;
+
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
         }
     </script>
 </body>
