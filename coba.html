@@ -144,7 +144,7 @@
                     <!-- Participant Name -->
                     <div>
                         <label for="participantName" class="block text-xs font-semibold text-stone-700 mb-1">Nama Formulator / Peserta</label>
-                        <input type="text" id="participantName" placeholder="Contoh: Alexandra" 
+                        <input type="text" id="participantName" placeholder="Contoh: Alexandra" oninput="saveDraft(); calculateFinal();" 
                                class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition">
                     </div>
 
@@ -152,7 +152,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label for="workshopDate" class="block text-xs font-semibold text-stone-700 mb-1">Tanggal</label>
-                            <input type="date" id="workshopDate" 
+                            <input type="date" id="workshopDate" onchange="saveDraft()" 
                                    class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition">
                         </div>
                         <div>
@@ -476,19 +476,146 @@
             }
         };
 
+        // Local Storage Draft Storage Key
+        const DRAFT_STORAGE_KEY = 'creascent_fragrance_draft';
+        let isRestoringDraft = false;
+
+        function saveDraft() {
+            if (isRestoringDraft) return;
+            try {
+                const participant = document.getElementById('participantName')?.value || '';
+                const workshopDate = document.getElementById('workshopDate')?.value || '';
+                const bottleSize = document.getElementById('bottleSize')?.value || '20';
+                const perfumeType = document.querySelector('input[name="perfumeType"]:checked')?.value || 'EDP';
+                const structureMode = document.querySelector('input[name="structureMode"]:checked')?.value || 'standard';
+
+                const notes = { top: [], middle: [], base: [], blender: [] };
+
+                ['top', 'middle', 'base', 'blender'].forEach(category => {
+                    const container = document.getElementById(`${category}NotesContainer`);
+                    if (container) {
+                        const groups = container.querySelectorAll('.note-input-group');
+                        groups.forEach(g => {
+                            const name = g.querySelector('input[type="text"]')?.value || '';
+                            const percent = g.querySelector('input[type="number"]')?.value || '';
+                            notes[category].push({ name, percent });
+                        });
+                    }
+                });
+
+                const hasContent = participant.trim() !== '' || 
+                    ['top', 'middle', 'base', 'blender'].some(cat => 
+                        notes[cat].some(n => (n.name && n.name.trim() !== '') || (n.percent !== '' && n.percent !== null && !isNaN(n.percent) && Number(n.percent) > 0))
+                    );
+
+                if (!hasContent) {
+                    localStorage.removeItem(DRAFT_STORAGE_KEY);
+                    return;
+                }
+
+                const draft = {
+                    participant,
+                    workshopDate,
+                    bottleSize,
+                    perfumeType,
+                    structureMode,
+                    currentBasePyramid,
+                    notes,
+                    savedAt: new Date().toISOString()
+                };
+
+                localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+            } catch (err) {
+                console.warn('Gagal menyimpan draft ke localStorage:', err);
+            }
+        }
+
+        function loadDraft() {
+            try {
+                const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+                if (!raw) return false;
+
+                const draft = JSON.parse(raw);
+                if (!draft || !draft.notes) return false;
+
+                const hasContent = (draft.participant && draft.participant.trim() !== '') ||
+                    ['top', 'middle', 'base', 'blender'].some(cat =>
+                        Array.isArray(draft.notes[cat]) && draft.notes[cat].some(n => (n.name && n.name.trim() !== '') || (n.percent !== '' && n.percent !== null && !isNaN(n.percent) && Number(n.percent) > 0))
+                    );
+                if (!hasContent) return false;
+
+                isRestoringDraft = true;
+
+                if (draft.participant !== undefined) {
+                    document.getElementById('participantName').value = draft.participant;
+                }
+                if (draft.workshopDate) {
+                    document.getElementById('workshopDate').value = draft.workshopDate;
+                }
+                if (draft.bottleSize) {
+                    document.getElementById('bottleSize').value = draft.bottleSize;
+                }
+
+                if (draft.perfumeType) {
+                    const radio = document.querySelector(`input[name="perfumeType"][value="${draft.perfumeType}"]`);
+                    if (radio) radio.checked = true;
+                }
+
+                if (draft.currentBasePyramid) {
+                    currentBasePyramid = draft.currentBasePyramid;
+                }
+
+                if (draft.structureMode) {
+                    const structRadio = document.querySelector(`input[name="structureMode"][value="${draft.structureMode}"]`);
+                    if (structRadio) structRadio.checked = true;
+                }
+
+                calculateBasic();
+                changeStructureMode(draft.structureMode || 'standard');
+
+                ['top', 'middle', 'base', 'blender'].forEach(cat => {
+                    const container = document.getElementById(`${cat}NotesContainer`);
+                    if (container) {
+                        container.innerHTML = '';
+                        noteCounters[cat] = 0;
+                    }
+
+                    if (Array.isArray(draft.notes[cat]) && draft.notes[cat].length > 0) {
+                        draft.notes[cat].forEach(n => {
+                            addNote(cat, n.name, n.percent);
+                        });
+                    } else if (cat !== 'blender' || draft.structureMode === 'blender') {
+                        addNote(cat);
+                    }
+                });
+
+                isRestoringDraft = false;
+                calculateFinal();
+                showToast('✨ Draft racikan sebelumnya berhasil dimuat!');
+                return true;
+            } catch (err) {
+                isRestoringDraft = false;
+                console.warn('Gagal memuat draft dari localStorage:', err);
+                return false;
+            }
+        }
+
         // Initialize on page load
         window.onload = function() {
-            // Set today's date default
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('workshopDate').value = today;
-            
-            // Add initial default input slots
-            addNote('top');
-            addNote('middle');
-            addNote('base');
+            const hasDraft = loadDraft();
+            if (!hasDraft) {
+                // Set today's date default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('workshopDate').value = today;
+                
+                // Add initial default input slots
+                addNote('top');
+                addNote('middle');
+                addNote('base');
 
-            // Trigger initial basic calculation
-            calculateBasic();
+                // Trigger initial basic calculation
+                calculateBasic();
+            }
         };
 
         function calculateBasic() {
@@ -592,12 +719,12 @@
             noteDiv.innerHTML = `
                 <div class="col-span-6">
                     <input type="text" value="${initialName}" placeholder="Nama note (ex: Lavender)" 
-                           oninput="calculateFinal()" id="${noteId}_name"
+                           oninput="calculateFinal()" id="${noteId}_name" aria-label="Nama note"
                            class="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition shadow-2xs">
                 </div>
                 <div class="col-span-4 relative">
                     <input type="number" value="${initialPercent}" placeholder="%" min="0" max="100" step="1"
-                           oninput="calculateFinal()" id="${noteId}_percent"
+                           oninput="calculateFinal()" id="${noteId}_percent" aria-label="Persentase note"
                            class="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition pr-6 shadow-2xs font-mono">
                     <span class="absolute right-2.5 top-1.5 text-xs text-stone-400 font-mono">%</span>
                 </div>
@@ -612,7 +739,9 @@
             `;
             
             container.appendChild(noteDiv);
-            calculateFinal();
+            if (!isRestoringDraft) {
+                calculateFinal();
+            }
         }
 
         function removeNote(noteId, category) {
@@ -704,6 +833,7 @@
             } else {
                 document.getElementById('finalResult').style.display = 'none';
             }
+            saveDraft();
         }
 
         function displayFinalResults(results) {
@@ -755,7 +885,7 @@
                 <td class="py-2.5 px-3 text-emerald-800 font-bold">Pelarut Utama</td>
                 <td class="py-2.5 px-3 font-semibold text-stone-900 print-text-dark">Etanol (Alcohol Denat 96%)</td>
                 <td class="py-2.5 px-3 text-right font-mono text-stone-400">-</td>
-                <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 print-text-dark">${window.ethanolWeight.toFixed(3)}g</td>
+                <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 print-text-dark">${(window.ethanolWeight || 0).toFixed(3)}g</td>
                 <td class="py-2.5 px-3 text-right font-mono text-stone-400">-</td>
             `;
             tbody.appendChild(ethanolTr);
@@ -797,6 +927,9 @@
 
         // Reset All Inputs
         function resetCalculator() {
+            try {
+                localStorage.removeItem(DRAFT_STORAGE_KEY);
+            } catch (e) {}
             document.getElementById('participantName').value = '';
             document.getElementById('formulaName').value = '';
             document.getElementById('bottleSize').value = '20';
@@ -831,8 +964,8 @@
             text += `Formulator: ${participant}\n`;
             text += `Varian: ${formulaName}\n`;
             text += `Spesifikasi: ${perfumeType} (${bottleSize}ml)\n`;
-            text += `Pelarut Etanol: ${window.ethanolWeight.toFixed(2)}g\n`;
-            text += `Total Diluted FO (35%): ${window.dilutedFOWeight.toFixed(2)}g\n\n`;
+            text += `Pelarut Etanol: ${(window.ethanolWeight || 0).toFixed(2)}g\n`;
+            text += `Total Diluted FO (35%): ${(window.dilutedFOWeight || 0).toFixed(2)}g\n\n`;
             text += `[Komposisi Fragrance Notes]\n`;
 
             const rows = document.querySelectorAll('#recipeTableBody tr');
